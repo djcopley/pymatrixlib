@@ -251,6 +251,41 @@ class Matrix:
 
         return res
 
+    def __eq__(self, other):
+        """
+        Equal operator
+
+        :param Matrix other: matrix to test equality against
+        :return bool: equality of the matrices
+        """
+        if not isinstance(other, Matrix) or self.rows != other.rows or self.cols != other.cols:
+            return False
+
+        # Iterate and check equality of each element
+        for row_idx in range(self.rows):
+            for col_idx in range(self.cols):
+                if self[row_idx][col_idx] != other[row_idx][col_idx]:
+                    return False
+
+        return True
+
+    def __ne__(self, other):
+        """
+        Not equal operator
+
+        :param Matrix other: matrix to test non-equality against
+        :return bool: non-equality of the matrices
+        """
+        return not self == other
+
+    def __hash__(self):
+        """
+        Method computes and returns the hash of the Matrix data array
+
+        :return: hash of matrix
+        """
+        return hash(self._matrix)
+
     @property
     def rows(self):
         """
