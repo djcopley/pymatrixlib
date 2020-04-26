@@ -1,2 +1,7 @@
 .idea/*
 venv/*
+.eggs/
+build/
+dist/
+*.egg-info
+version.py
