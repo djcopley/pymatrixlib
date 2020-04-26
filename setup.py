@@ -10,7 +10,7 @@ setup(
     keywords=["linear algebra", "matrix", "calculator", "library", "python3"],
     classifiers=[
         "Development Status :: 1 - Planning",
-        "Topic :: Application",
+        "Topic :: Scientific/Engineering::Mathematics",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
     ],
     python_requires=">=3=4",
