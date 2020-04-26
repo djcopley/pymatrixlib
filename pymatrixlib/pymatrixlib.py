@@ -158,7 +158,7 @@ class Matrix:
             raise TypeError("unsupported operand type(s) for +: '{}' and '{}'".format(type(self), type(other)))
 
         if self.rows != other.rows or self.cols != other.cols:
-            raise MatrixError("cannot add matrix of dimmensions ({}, {}) and ({}, {})".format(
+            raise MatrixError("cannot add matrix of dimensions ({}, {}) and ({}, {})".format(
                 self.rows, self.cols, other.rows, other.cols))
 
         res = Matrix(self.rows, self.cols)
@@ -180,7 +180,7 @@ class Matrix:
             raise TypeError("unsupported operand type(s) for -: '{}' and '{}'".format(type(self), type(other)))
 
         if self.rows != other.rows or self.cols != other.cols:
-            raise MatrixError("cannot subtract matrix of dimmensions ({}, {}) and ({}, {})".format(
+            raise MatrixError("cannot subtract matrix of dimensions ({}, {}) and ({}, {})".format(
                 self.rows, self.cols, other.rows, other.cols))
 
         res = Matrix(self.rows, self.cols)
@@ -413,10 +413,10 @@ class Matrix:
             raise MatrixError("cannot calculate the inverse of a non-square matrix")
 
         # Augment matrix with identity matrix for the gauss-jordan elimination inverse method
-        augmented_matrix = AugmentedMatrix(self, IdentityMatrix(self.rows, self.cols)).rref()
+        reduced_matrix = AugmentedMatrix(self, IdentityMatrix(self.rows, self.cols)).rref()
 
         # Return a non-augmented matrix
-        return Matrix(augmented_matrix)  # Copy constructor will copy matrix into new array
+        return Matrix(reduced_matrix)  # Copy constructor will copy matrix into new array
 
     def ref(self):
         """
@@ -496,7 +496,7 @@ class AugmentedMatrix(Matrix):
         self._b_matrix = b
 
     def ref(self):
-        pass
+        return super().ref()
 
     def rref(self):
-        pass
+        return super().rref()
