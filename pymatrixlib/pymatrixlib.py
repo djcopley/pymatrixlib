@@ -87,17 +87,18 @@ class Matrix:
         :return str: string representation of the matrix
         """
         # The length of the longest matrix element
-        max_len = 0
+        max_len_col = numpy.zeros((self.cols,), dtype=numpy.int)
 
-        # Number of spaces to pad between matrix elements
-        padding = 1
+        # Number of additional spaces to pad matrix elements
+        padding = 2
 
         # String representation of the matrix
         str_repr = ""
 
-        for row in self:
-            for item in row:
-                max_len = max(len(str(item)), max_len)
+        # Get the length of the longest element in each col (to help formatting)
+        for col_idx in range(self.cols):
+            for row_idx in range(self.rows):
+                max_len_col[col_idx] = max(len(str(self[row_idx][col_idx])), max_len_col[col_idx])
 
         for row_idx in range(self.rows):
 
@@ -109,7 +110,8 @@ class Matrix:
                 str_repr += "|"
 
             for col_idx in range(self.cols):
-                str_repr += " " * (max_len + padding - len(str(self[row_idx][col_idx]))) + str(self[row_idx][col_idx])
+                str_repr += " " * (max_len_col[col_idx] + padding - len(str(self[row_idx][col_idx]))) + str(
+                    self[row_idx][col_idx])
 
             str_repr += " " * padding
             if row_idx == 0:
@@ -219,6 +221,40 @@ class Matrix:
             for col_idx in range(res.cols):
                 for n in range(self.cols):
                     res[row_idx][col_idx] += self[row_idx][n] * other[n][col_idx]
+
+        return res
+
+    def __truediv__(self, other):
+        """
+
+        :param other:
+        :return:
+        """
+        if not (isinstance(other, int) or isinstance(other, float)):
+            raise TypeError("unsupported operand type(s) for *: '{}' and '{}'".format(type(self), type(other)))
+
+        res = Matrix(self)
+
+        for row_idx in range(res.rows):
+            for col_idx in range(res.cols):
+                res[row_idx][col_idx] /= other
+
+        return res
+
+    def __floordiv__(self, other):
+        """
+
+        :param other:
+        :return:
+        """
+        if not (isinstance(other, int) or isinstance(other, float)):
+            raise TypeError("unsupported operand type(s) for /: '{}' and '{}'".format(type(self), type(other)))
+
+        res = Matrix(self)
+
+        for row_idx in range(res.rows):
+            for col_idx in range(res.cols):
+                res[row_idx][col_idx] //= other
 
         return res
 
