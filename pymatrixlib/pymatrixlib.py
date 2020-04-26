@@ -55,16 +55,16 @@ class Matrix:
             if len(args) >= 3:
                 dtype = args[2]
 
-        if not (matrix or (rows and cols)):
+        if not (matrix is not None or (rows and cols)):
             raise TypeError("{}() missing required argument(s): 'matrix' or ('rows' and 'cols')".format(
                 self.__class__.__name__))
-        elif matrix and not (isinstance(matrix, Matrix) or isinstance(matrix, numpy.ndarray)):
+        elif matrix is not None and not (isinstance(matrix, Matrix) or isinstance(matrix, numpy.ndarray)):
             raise TypeError("argument 'matrix' must be type 'Matrix' or 'numpy.ndarray'")
         elif not rows and cols and (isinstance(rows, int) or isinstance(cols, int)):
             raise TypeError("argument(s) 'rows' and 'cols' must be type 'int'")
 
         # Copy matrix values into self
-        if matrix:
+        if matrix is not None:
             if isinstance(matrix, Matrix):
                 self._matrix = matrix._matrix.copy()
                 self._rows = matrix._rows
@@ -437,8 +437,37 @@ class Matrix:
 
         :return Matrix: reduced row echelon form
         """
-        # Todo
-        pass
+        reduced_matrix = Matrix(self)
+
+        lead = 0
+
+        for row_idx in range(reduced_matrix.rows):
+            if reduced_matrix.cols <= lead:
+                break
+            pointer = row_idx
+            while reduced_matrix[pointer, lead] == 0:
+                pointer += 1
+                if reduced_matrix.rows == pointer:
+                    pointer = row_idx
+                    lead += 1
+                    if reduced_matrix.cols == lead:
+                        break
+
+            # Swap rows row_idx and i
+            temp = reduced_matrix[row_idx]
+            reduced_matrix[row_idx] = reduced_matrix[pointer]
+            reduced_matrix[pointer] = temp
+
+            if reduced_matrix[row_idx][lead] != 0:
+                reduced_matrix[row_idx] /= reduced_matrix[row_idx, lead]
+
+            for pointer in range(reduced_matrix.rows):
+                if pointer != row_idx:
+                    reduced_matrix[pointer] -= reduced_matrix[pointer][lead] * reduced_matrix[row_idx]
+
+            lead += 1
+
+        return reduced_matrix
 
 
 class IdentityMatrix(Matrix):
