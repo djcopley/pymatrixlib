@@ -6,19 +6,18 @@ class MatrixError(Exception):
 
 
 class Matrix:
-    def __init__(self, *args, matrix=None, rows=None, cols=None, dtype=None):
+    def __init__(self, *args, matrix=None, rows=None, cols=None):
         """
         Matrix Constructor
         -----------------
         If 'matrix' is passed, __init__ will act as a copy constructor. Alternatively, if 'rows' and 'cols' are
-        specified, __init__ constructs a new zero matrix. Note: argument 'matrix' is mutually exclusive with 'rows',
-        'cols', and 'dtype'. Do not pass both.
+        specified, __init__ constructs a new zero matrix. Note: argument 'matrix' is mutually exclusive with 'rows' and
+        'cols'. Do not pass both.
 
         :param Matrix or numpy.ndarray matrix: object to copy
 
         :param int rows: number of rows
         :param int cols: number of columns
-        :param dtype: numpy data type (optional)
 
         Examples
         --------
@@ -27,22 +26,12 @@ class Matrix:
         | 0.0 0.0 0.0 |
         └ 0.0 0.0 0.0 ┘
 
-        >>> Matrix(3, 3, numpy.int)
-        ┌ 0 0 0 ┐
-        | 0 0 0 |
-        └ 0 0 0 ┘
-
         >>> A = Matrix(3, 3)
         >>> A[0][1] = A[1][1] = A[2][1] = 25
         >>> Matrix(A)
         ┌  0.0 25.0  0.0 ┐
         |  0.0 25.0  0.0 |
         └  0.0 25.0  0.0 ┘
-
-        >>> Matrix(rows=3, cols=3, dtype=int)
-        ┌ 0 0 0 ┐
-        | 0 0 0 |
-        └ 0 0 0 ┘
         """
 
         if len(args) == 1:
@@ -51,9 +40,6 @@ class Matrix:
         elif len(args) >= 2:
             rows = args[0]
             cols = args[1]
-
-            if len(args) >= 3:
-                dtype = args[2]
 
         if not (matrix is not None or (rows and cols)):
             raise TypeError("{}() missing required argument(s): 'matrix' or ('rows' and 'cols')".format(
@@ -78,7 +64,7 @@ class Matrix:
         elif rows and cols:
             self._rows = rows
             self._cols = cols
-            self._matrix = numpy.zeros((rows, cols), dtype=dtype if dtype else numpy.double)
+            self._matrix = numpy.zeros((rows, cols), dtype=numpy.double)
 
     def __str__(self):
         """
@@ -87,7 +73,7 @@ class Matrix:
         :return str: string representation of the matrix
         """
         # The length of the longest matrix element
-        max_len_col = numpy.zeros((self.cols,), dtype=numpy.int)
+        max_len_col = numpy.zeros(self.cols, dtype=numpy.int)
 
         # Number of additional spaces to pad matrix elements
         padding = 2
@@ -382,6 +368,7 @@ class Matrix:
         :param int col: col to be removed from sub-matrix
         :return Matrix: sub-matrix with row and col removed
         """
+        # TODO remove when det method is updated
         sub_matrix = Matrix(self.rows - 1, self.cols - 1)
         # row and column counters for sub_matrix
         r = c = 0
@@ -414,6 +401,7 @@ class Matrix:
 
         :return Matrix: determinant
         """
+        # TODO: efficiency - compute row echelon form then return product of diagonal
         if not self.square:
             raise MatrixError("determinant can only be computed for a square matrix")
 
@@ -473,6 +461,8 @@ class Matrix:
 
         :return Matrix: reduced row echelon form
         """
+        # FIXME I keep seeing -0.0 in answer
+        # FIXME when cols are not linearly independent, algorithm raises an IndexError
         reduced_matrix = Matrix(self)
 
         lead = 0
@@ -507,16 +497,57 @@ class Matrix:
 
 
 class IdentityMatrix(Matrix):
-    def __init__(self, rows, cols, dtype=None):
-        super().__init__(rows, cols, dtype=dtype)
+    def __init__(self, rows, cols):
+        """
+
+        :param int rows: number of rows
+        :param int cols: number of columns
+
+        Examples
+        --------
+
+        >>> IdentityMatrix(3, 3)
+        ┌  1.0  0.0  0.0  ┐
+        |  0.0  1.0  0.0  |
+        └  0.0  0.0  1.0  ┘
+
+        >>> IdentityMatrix(3, 4)
+        ┌  1.0  0.0  0.0  0.0  ┐
+        |  0.0  1.0  0.0  0.0  |
+        └  0.0  0.0  1.0  0.0  ┘
+
+        >>> IdentityMatrix(3, 2)
+        ┌  1.0  0.0  ┐
+        |  0.0  1.0  |
+        └  0.0  0.0  ┘
+        """
+        super().__init__(rows, cols)
 
         for row_idx in range(min(self.rows, self.cols)):
             self[row_idx][row_idx] = 1
 
 
 class OnesMatrix(Matrix):
-    def __init__(self, rows, cols, dtype=None):
-        super().__init__(numpy.ones((rows, cols), dtype=dtype))
+    def __init__(self, rows, cols):
+        """
+        OnesMatrix Constructor
+
+        :param int rows: number of rows
+        :param int cols: number of columns
+
+        Examples
+        --------
+
+        >>> OnesMatrix(2, 2)
+        ┌  1.0  1.0  ┐
+        └  1.0  1.0  ┘
+
+        >>> OnesMatrix(3, 3)
+        ┌  1.0  1.0  1.0  ┐
+        |  1.0  1.0  1.0  |
+        └  1.0  1.0  1.0  ┘
+        """
+        super().__init__(numpy.ones((rows, cols)))
 
 
 class AugmentedMatrix(Matrix):
@@ -527,9 +558,20 @@ class AugmentedMatrix(Matrix):
 
         :param Matrix or numpy.ndarray matrix:
         :param Matrix b: augmented matrix / vector
+        
+        Examples
+        --------
+        
+        >>> AugmentedMatrix(Matrix(3, 3), IdentityMatrix(3, 3))
+        ┌  0.0  0.0  0.0  1.0  0.0  0.0  ┐
+        |  0.0  0.0  0.0  0.0  1.0  0.0  |
+        └  0.0  0.0  0.0  0.0  0.0  1.0  ┘
         """
         super().__init__(matrix)
         self._b_matrix = b
+
+    def get_solution_set(self):
+        return Matrix(self._b_matrix)
 
     def ref(self):
         return super().ref()
