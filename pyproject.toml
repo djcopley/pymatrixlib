@@ -1,0 +1,12 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "pymatrixlib"
+authors = [{ name = "Daniel Copley", email = "djcopley@users.noreply.github.com" }]
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = ["License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"]
+keywords = ["linear algebra", "matrix", "calculator", "library"]
+dynamic = ["version", "description"]

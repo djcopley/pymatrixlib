@@ -1,8 +1,6 @@
-import numpy
+import numpy as np
 
-
-class MatrixError(Exception):
-    pass
+from .exceptions import MatrixError
 
 
 class Matrix:
@@ -14,7 +12,7 @@ class Matrix:
         specified, __init__ constructs a new zero matrix. Note: argument 'matrix' is mutually exclusive with 'rows' and
         'cols'. Do not pass both.
 
-        :param Matrix or numpy.ndarray matrix: object to copy
+        :param Matrix or np.ndarray matrix: object to copy
 
         :param int rows: number of rows
         :param int cols: number of columns
@@ -44,8 +42,8 @@ class Matrix:
         if not (matrix is not None or (rows and cols)):
             raise TypeError("{}() missing required argument(s): 'matrix' or ('rows' and 'cols')".format(
                 self.__class__.__name__))
-        elif matrix is not None and not (isinstance(matrix, Matrix) or isinstance(matrix, numpy.ndarray)):
-            raise TypeError("argument 'matrix' must be type 'Matrix' or 'numpy.ndarray'")
+        elif matrix is not None and not (isinstance(matrix, Matrix) or isinstance(matrix, np.ndarray)):
+            raise TypeError("argument 'matrix' must be type 'Matrix' or 'np.ndarray'")
         elif not rows and cols and (isinstance(rows, int) or isinstance(cols, int)):
             raise TypeError("argument(s) 'rows' and 'cols' must be type 'int'")
 
@@ -55,7 +53,7 @@ class Matrix:
                 self._matrix = matrix._matrix.copy()
                 self._rows = matrix._rows
                 self._cols = matrix._cols
-            elif isinstance(matrix, numpy.ndarray):
+            elif isinstance(matrix, np.ndarray):
                 self._matrix = matrix.copy()
                 self._rows = len(matrix)
                 self._cols = len(matrix[0])
@@ -64,7 +62,7 @@ class Matrix:
         elif rows and cols:
             self._rows = rows
             self._cols = cols
-            self._matrix = numpy.zeros((rows, cols), dtype=numpy.double)
+            self._matrix = np.zeros((rows, cols), dtype=np.double)
 
     def __str__(self):
         """
@@ -73,7 +71,7 @@ class Matrix:
         :return str: string representation of the matrix
         """
         # The length of the longest matrix element
-        max_len_col = numpy.zeros(self.cols, dtype=numpy.int)
+        max_len_col = np.zeros(self.cols, dtype=np.int)
 
         # Number of additional spaces to pad matrix elements
         padding = 2
@@ -547,7 +545,7 @@ class OnesMatrix(Matrix):
         |  1.0  1.0  1.0  |
         └  1.0  1.0  1.0  ┘
         """
-        super().__init__(numpy.ones((rows, cols)))
+        super().__init__(np.ones((rows, cols)))
 
 
 class AugmentedMatrix(Matrix):
@@ -556,7 +554,7 @@ class AugmentedMatrix(Matrix):
         AugmentedMatrix Constructor
         ---------------------------
 
-        :param Matrix or numpy.ndarray matrix:
+        :param Matrix or np.ndarray matrix:
         :param Matrix b: augmented matrix / vector
         
         Examples
